@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stock Data{% endblock %}
+
+{% block body %}
+
+    <style>
+        .wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .product-details { background: #f9ffeb; border: none; padding: 20px; margin-top: 20px; box-shadow: -5px 5px 25px #0000001a; }
+        .product-details h2 { margin-top: 0; }
+        .stock-details { margin-top: 20px; }
+        .stock-details table { width: 100%; border-collapse: collapse; }
+        .stock-details th, .stock-details td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    </style>
+
+    <div class="wrapper">
+        <h1>Stock Data</h1>
+
+        <div class="product-details">
+            <h2>{{ product.name }}</h2>
+            <p><strong>SKU:</strong> {{ product.sku }}</p>
+            <hr>
+            
+            <div class="stock-details">
+                <h3>Stocks</h3>
+
+                {% if product.stocks is empty %}
+                    <p>No stocks available for this product.</p>
+                {% else %}
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Location</th>
+                            <th>Quantity</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for stock in product.stocks %}
+                                <tr>
+                                    <td>{{ stock.location.name }}</td>
+                                    <td>{{ stock.quantity == 0 ? 'Out of stock' : stock.quantity }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
