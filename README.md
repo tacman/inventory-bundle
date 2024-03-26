@@ -24,7 +24,7 @@ Packagist: https://packagist.org/packages/plinio-cardoso/inventory-bundle
 #### Step 1 - Download the Inventory Bundle using composer
 
 ```bash  
-$ composer require plinio-cardoso/inventory-bundle "1.0"
+$ composer require plinio-cardoso/inventory-bundle "2.0"
 ```
 
 #### Step 2 - Add the config files manually if you are not using Symfony Flex
