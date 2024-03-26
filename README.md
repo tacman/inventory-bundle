@@ -4,6 +4,8 @@
 I recorded a video showing the application running, you can watch it [here](https://www.youtube.com/watch?v=FNidmKk1OOs).
 I go through the application, run the inventory command, run the tests, update and create stocks, etc.
 
+Packagist: https://packagist.org/packages/plinio-cardoso/inventory-bundle
+
 ## Installation
 
 #### Optional
