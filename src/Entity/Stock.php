@@ -18,7 +18,7 @@ class Stock
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Warehouse $location = null;
+    private ?Warehouse $warehouse = null;
 
     #[ORM\ManyToOne(inversedBy: 'stocks')]
     #[ORM\JoinColumn(nullable: false)]
@@ -41,14 +41,14 @@ class Stock
         return $this;
     }
 
-    public function getLocation(): ?Warehouse
+    public function getWarehouse(): ?Warehouse
     {
-        return $this->location;
+        return $this->warehouse;
     }
 
-    public function setLocation(?Warehouse $location): static
+    public function setWarehouse(?Warehouse $warehouse): static
     {
-        $this->location = $location;
+        $this->warehouse = $warehouse;
 
         return $this;
     }
@@ -69,7 +69,7 @@ class Stock
     {
         $stock = new Stock();
         $stock->setProduct($product);
-        $stock->setLocation($warehouse);
+        $stock->setWarehouse($warehouse);
         $stock->setQuantity($quantity);
 
         return $stock;

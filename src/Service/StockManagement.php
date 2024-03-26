@@ -5,7 +5,6 @@ namespace PlinioCardoso\InventoryBundle\Service;
 use PlinioCardoso\InventoryBundle\Entity\Stock;
 use PlinioCardoso\InventoryBundle\Message\StockUpdateNotification;
 use PlinioCardoso\InventoryBundle\Model\StockDTO;
-use PlinioCardoso\InventoryBundle\Model\StockUpdateRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -18,10 +17,19 @@ readonly class StockManagement
         private MessageBusInterface $bus
     ) {}
 
+    public function handleStockCreateUpdate(StockDTO $stockDTO): Stock
+    {
+        if ($stockDTO->getStockId() === null) {
+            return $this->createStock($stockDTO);
+        }
+
+        return $this->updateStock($stockDTO);
+    }
+
     public function createStock(StockDTO $stockDTO): Stock
     {
         $product = $this->productService->getProduct($stockDTO->getProductId());
-        $warehouse = $this->warehouseService->getWarehouseByLocation($stockDTO->getLocation());
+        $warehouse = $this->warehouseService->getWarehouse($stockDTO->getWarehouseId());
 
         if ($product === null) {
             throw new NotFoundHttpException('Product not found');
@@ -40,15 +48,39 @@ readonly class StockManagement
         );
     }
 
-    public function updateStock(int $stockId, StockUpdateRequest $stockUpdateRequest): void
+    public function updateStock(StockDTO $stockDTO): Stock
     {
-        $stock = $this->stockService->getStock($stockId);
+        $stock = $this->stockService->getStock($stockDTO->getStockId());
 
         if ($stock === null) {
             throw new NotFoundHttpException('Stock not found');
         }
 
-        $stock->setQuantity($stockUpdateRequest->getQuantity());
+        $stock->setQuantity($stockDTO->getQuantity());
+        $this->stockService->save($stock);
+        $this->bus->dispatch(new StockUpdateNotification($stock));
+
+        return $stock;
+    }
+
+    public function importStock(string $sku, int $quantity, string $warehouseCode): void
+    {
+        $product = $this->productService->getProductBySku($sku);
+        $warehouse = $this->warehouseService->getWarehouseByCode($warehouseCode);
+
+        if ($product === null || $warehouse === null) {
+            throw new NotFoundHttpException(
+                'Product or Warehouse not found - SKU: ' . $sku . ' Warehouse: ' . $warehouseCode
+            );
+        }
+
+        $stock = $this->stockService->getStockByProductAndWarehouse($product, $warehouse);
+
+        if ($stock === null) {
+            $stock = Stock::of($product, $warehouse, $quantity);
+        }
+
+        $stock->setQuantity($quantity);
         $this->stockService->save($stock);
         $this->bus->dispatch(new StockUpdateNotification($stock));
     }

@@ -13,7 +13,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-readonly class StockUpdateHandler
+readonly class StockUpdateEmailHandler implements StockUpdateHandlerInterface
 {
     public function __construct(
         private LoggerInterface $logger,
@@ -23,9 +23,12 @@ readonly class StockUpdateHandler
 
     public function __invoke(StockUpdateNotification $message): void
     {
+        $this->logger->info('Handling stock updated message - Email');
         $stock = $message->getContent();
         $product = $stock->getProduct();
-        $this->logger->info("Handling stock updated message - Stock ID: {$stock->getId()} - Quantity Added: {$stock->getQuantity()}");
+        $this->logger->info(
+            "Handling stock updated message - Stock ID: {$stock->getId()} - Quantity Added: {$stock->getQuantity()}"
+        );
 
         if ($stock->getQuantity() <= 0) {
             $this->handleOutOfStockEmail($product, $stock);
@@ -47,7 +50,7 @@ readonly class StockUpdateHandler
             ->htmlTemplate('@Inventory/emails/out-of-stock.html.twig')
             ->context([
                 'sku' => $product->getSku(),
-                'location' => $stock->getLocation()->getName(),
+                'warehouse' => $stock->getWarehouse()->getName(),
             ]);
 
         try {

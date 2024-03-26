@@ -2,7 +2,7 @@
 
 namespace PlinioCardoso\InventoryBundle\Command;
 
-use PlinioCardoso\InventoryBundle\Service\StockImportManagement;
+use PlinioCardoso\InventoryBundle\Service\StockManagement;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -22,7 +22,7 @@ use Symfony\Component\Finder\Finder;
 class InventoryCommand extends Command
 {
     public function __construct(
-        private readonly StockImportManagement $stockImportManagement,
+        private readonly StockManagement $stockManagement,
         private readonly LoggerInterface $logger
     ) {
         parent::__construct();
@@ -49,14 +49,19 @@ class InventoryCommand extends Command
             ->name($file);
 
         if (!$finder->hasResults()) {
-            throw new FileNotFoundException('The specified file does not exist, please check the filename/directory and try again.');
+            throw new FileNotFoundException(
+                'The specified file does not exist, please check the filename/directory and try again.'
+            );
         }
 
         foreach ($finder as $file) {
             $content = $file->getContents();
             $this->processCsvContent(
-                str_getcsv($content, "\n"), $io
+                str_getcsv($content, "\n"),
+                $io
             );
+
+            break; // Process only the first file found
         }
 
         $io->success('Stock data updated successfully!');
@@ -71,15 +76,17 @@ class InventoryCommand extends Command
         $progressBar->setProgressCharacter('|');
 
         foreach ($rows as $key => $row) {
-            if ($key == 0) { continue; }
+            if ($key == 0) {
+                continue;
+            }
 
             $columns = str_getcsv($row);
             $sku = $columns[0];
             $quantity = $columns[1];
-            $location = $columns[2];
+            $warehouse = $columns[2];
 
             try {
-                $this->stockImportManagement->createOrUpdateStock($sku, $quantity, $location);
+                $this->stockManagement->importStock($sku, $quantity, $warehouse);
                 $progressBar->advance();
             } catch (RuntimeException $e) {
                 $this->logger->error($e->getMessage());

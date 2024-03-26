@@ -8,7 +8,6 @@ use PlinioCardoso\InventoryBundle\Entity\Product;
 use PlinioCardoso\InventoryBundle\Entity\Stock;
 use PlinioCardoso\InventoryBundle\Entity\Warehouse;
 use PlinioCardoso\InventoryBundle\Model\StockDTO;
-use PlinioCardoso\InventoryBundle\Model\StockUpdateRequest;
 use PlinioCardoso\InventoryBundle\Service\ProductService;
 use PlinioCardoso\InventoryBundle\Service\StockManagement;
 use PlinioCardoso\InventoryBundle\Service\StockService;
@@ -49,20 +48,20 @@ class StockManagementTest extends TestCase
             ->willReturn(new Product());
 
         $this->warehouseService->expects(self::once())
-            ->method('getWarehouseByLocation')
-            ->with('dublin')
+            ->method('getWarehouse')
+            ->with(1)
             ->willReturn(new Warehouse());
 
         $this->stockService->expects(self::once())
             ->method('save');
 
-        $stockDTO = new StockDTO(1, 10, 'dublin');
-        $this->service->createStock($stockDTO);
+        $stockDTO = new StockDTO(1, 10, 1, null);
+        $this->service->handleStockCreateUpdate($stockDTO);
     }
 
     public function testShouldThrowExceptionForNonExistingProduct(): void
     {
-        $stockDTO = new StockDTO(1, 10, 'dublin');
+        $stockDTO = new StockDTO(1, 10, 1, null);
         $this->expectException(NotFoundHttpException::class);
 
         $this->productService->expects(self::once())
@@ -70,12 +69,12 @@ class StockManagementTest extends TestCase
             ->with(1)
             ->willReturn(null);
 
-        $this->service->createStock($stockDTO);
+        $this->service->handleStockCreateUpdate($stockDTO);
     }
 
     public function testShouldThrowExceptionForNonExistingWarehouse(): void
     {
-        $stockDTO = new StockDTO(1, 10, 'dublin');
+        $stockDTO = new StockDTO(1, 10, 1, null);
         $this->expectException(NotFoundHttpException::class);
 
         $this->productService->expects(self::once())
@@ -84,16 +83,16 @@ class StockManagementTest extends TestCase
             ->willReturn(new Product());
 
         $this->warehouseService->expects(self::once())
-            ->method('getWarehouseByLocation')
-            ->with('dublin')
+            ->method('getWarehouse')
+            ->with(1)
             ->willReturn(null);
 
-        $this->service->createStock($stockDTO);
+        $this->service->handleStockCreateUpdate($stockDTO);
     }
 
     public function testShouldThrowExceptionWhenStockAlreadyExistsForProductAndWarehouse(): void
     {
-        $stockDTO = new StockDTO(1, 10, 'dublin');
+        $stockDTO = new StockDTO(1, 10, 1, null);
         $this->expectException(NotFoundHttpException::class);
 
         $this->productService->expects(self::once())
@@ -102,15 +101,15 @@ class StockManagementTest extends TestCase
             ->willReturn(new Product());
 
         $this->warehouseService->expects(self::once())
-            ->method('getWarehouseByLocation')
-            ->with('dublin')
+            ->method('getWarehouse')
+            ->with(1)
             ->willReturn(new Warehouse());
 
         $this->stockService->expects(self::once())
             ->method('exists')
             ->willReturn(true);
 
-        $this->service->createStock($stockDTO);
+        $this->service->handleStockCreateUpdate($stockDTO);
     }
 
     public function testShouldUpdateStock(): void
@@ -133,6 +132,94 @@ class StockManagementTest extends TestCase
             ->method('dispatch')
             ->willReturn(new Envelope(new stdClass(), []));
 
-        $this->service->updateStock(1, new StockUpdateRequest(10));
+        $this->service->handleStockCreateUpdate(
+            new StockDTO(null, 10, null, 1)
+        );
+    }
+
+    public function testShouldImportStock(): void
+    {
+        $this->productService->expects(self::once())
+            ->method('getProductBySku')
+            ->with('abc')
+            ->willReturn(new Product());
+
+        $this->warehouseService->expects(self::once())
+            ->method('getWarehouseByCode')
+            ->with('dublin')
+            ->willReturn(new Warehouse());
+
+        $this->stockService->expects(self::once())
+            ->method('getStockByProductAndWarehouse')
+            ->willReturn(null);
+
+        $this->stockService->expects(self::once())
+            ->method('save');
+
+        $this->bus->expects(self::once())
+            ->method('dispatch')
+            ->willReturn(new Envelope(new stdClass(), []));
+
+        $this->service->importStock('abc', 1, 'dublin');
+    }
+
+    public function testShouldUpdateImportedStock(): void
+    {
+        $this->productService->expects(self::once())
+            ->method('getProductBySku')
+            ->with('abc')
+            ->willReturn(new Product());
+
+        $this->warehouseService->expects(self::once())
+            ->method('getWarehouseByCode')
+            ->with('dublin')
+            ->willReturn(new Warehouse());
+
+        $stock = $this->createMock(Stock::class);
+        $this->stockService->expects(self::once())
+            ->method('getStockByProductAndWarehouse')
+            ->willReturn($stock);
+
+        $stock->expects(self::once())
+            ->method('setQuantity')
+            ->with(1);
+
+        $this->stockService->expects(self::once())
+            ->method('save');
+
+        $this->bus->expects(self::once())
+            ->method('dispatch')
+            ->willReturn(new Envelope(new stdClass(), []));
+
+        $this->service->importStock('abc', 1, 'dublin');
+    }
+
+    public function testShouldThrowExceptionForNonExistingProductWhenImportingStock(): void
+    {
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->productService->expects(self::once())
+            ->method('getProductBySku')
+            ->with('abc')
+            ->willReturn(null);
+
+        $this->service->importStock('abc', 1, 'dublin');
+    }
+
+    public function testShouldThrowExceptionForNonExistingWarehouseWhenImportingStock(): void
+    {
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->productService->expects(self::once())
+            ->method('getProductBySku')
+            ->with('abc')
+            ->willReturn(new Product());
+
+        $this->warehouseService->expects(self::once())
+            ->method('getWarehouseByCode')
+            ->with('dublin')
+            ->willReturn(null);
+
+        $this->service->importStock('abc', 1, 'dublin');
     }
 }

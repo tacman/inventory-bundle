@@ -4,7 +4,9 @@ namespace PlinioCardoso\InventoryBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use PlinioCardoso\InventoryBundle\Entity\Product;
 use PlinioCardoso\InventoryBundle\Entity\Stock;
+use PlinioCardoso\InventoryBundle\Entity\Warehouse;
 
 /**
  * @extends ServiceEntityRepository<Stock>
@@ -21,13 +23,13 @@ class StockRepository extends ServiceEntityRepository
         parent::__construct($registry, Stock::class);
     }
 
-    public function exists(array $criteria): bool
+    public function exists(Product $product, Warehouse $warehouse): bool
     {
         return (bool) $this->createQueryBuilder('e')
             ->select('COUNT(e.id)')
-            ->andWhere('e.product = :product AND e.location = :location')
-            ->setParameter('product', $criteria['product'])
-            ->setParameter('location', $criteria['location'])
+            ->andWhere('e.product = :product AND e.warehouse = :warehouse')
+            ->setParameter('product', $product)
+            ->setParameter('warehouse', $warehouse)
             ->getQuery()
             ->getSingleScalarResult();
     }

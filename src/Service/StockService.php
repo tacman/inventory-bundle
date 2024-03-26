@@ -20,14 +20,12 @@ class StockService
 
     public function getStockByProductAndWarehouse(Product $product, Warehouse $warehouse): ?Stock
     {
-        return $this->repository->findOneBy(['product' => $product, 'location' => $warehouse]);
+        return $this->repository->findOneBy(['product' => $product, 'warehouse' => $warehouse]);
     }
 
     public function exists(Product $product, Warehouse $warehouse): bool
     {
-        return $this->repository->exists(
-            ['product' => $product,'location' => $warehouse]
-        );
+        return $this->repository->exists($product, $warehouse);
     }
 
     public function save(Stock $stock): Stock

@@ -4,19 +4,19 @@ services:
     autoconfigure: true
 
   PlinioCardoso\InventoryBundle\Controller\InventoryController: ~
-  PlinioCardoso\InventoryBundle\Controller\InventoryApiController: ~
+  PlinioCardoso\InventoryBundle\Controller\Api\InventoryController: ~
 
   PlinioCardoso\InventoryBundle\Service\ProductService: ~
   PlinioCardoso\InventoryBundle\Service\StockService: ~
   PlinioCardoso\InventoryBundle\Service\WarehouseService: ~
   PlinioCardoso\InventoryBundle\Service\StockManagement: ~
-  PlinioCardoso\InventoryBundle\Service\StockImportManagement: ~
 
   PlinioCardoso\InventoryBundle\Repository\StockRepository: ~
   PlinioCardoso\InventoryBundle\Repository\ProductRepository: ~
   PlinioCardoso\InventoryBundle\Repository\WarehouseRepository: ~
 
   PlinioCardoso\InventoryBundle\Message\StockUpdateNotification: ~
-  PlinioCardoso\InventoryBundle\MessageHandler\StockUpdateHandler: ~
+  PlinioCardoso\InventoryBundle\MessageHandler\StockUpdateEmailHandler: ~
+  PlinioCardoso\InventoryBundle\MessageHandler\StockUpdateSMSHandler: ~
 
   PlinioCardoso\InventoryBundle\Command\InventoryCommand: ~

@@ -4,20 +4,20 @@ namespace PlinioCardoso\InventoryBundle\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-readonly class StockDTO
+class StockDTO
 {
     public function __construct(
-        #[Assert\NotBlank]
-        public int $productId,
+        public ?int $productId,
 
         #[Assert\NotBlank]
         public int $quantity,
 
-        #[Assert\NotBlank]
-        public string $location
+        public ?string $warehouseId,
+
+        public ?int $stockId,
     ) {}
 
-    public function getProductId(): int
+    public function getProductId(): ?int
     {
         return $this->productId;
     }
@@ -27,8 +27,18 @@ readonly class StockDTO
         return $this->quantity;
     }
 
-    public function getLocation(): string
+    public function getStockId(): ?int
     {
-        return $this->location;
+        return $this->stockId;
+    }
+
+    public function setStockId(int $stockId): void
+    {
+        $this->stockId = $stockId;
+    }
+
+    public function getWarehouseId(): ?int
+    {
+        return $this->warehouseId;
     }
 }

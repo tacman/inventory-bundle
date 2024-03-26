@@ -17,34 +17,38 @@
         <h1>Stock Data</h1>
 
         <div class="product-details">
-            <h2>{{ product.name }}</h2>
-            <p><strong>SKU:</strong> {{ product.sku }}</p>
-            <hr>
-            
-            <div class="stock-details">
-                <h3>Stocks</h3>
+            {% if product is empty %}
+                <p>Product not found, please try again.</p>
+            {% else %}
+                <h2>{{ product.name }}</h2>
+                <p><strong>SKU:</strong> {{ product.sku }}</p>
+                <hr>
 
-                {% if product.stocks is empty %}
-                    <p>No stocks available for this product.</p>
-                {% else %}
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Location</th>
-                            <th>Quantity</th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                <div class="stock-details">
+                    <h3>Stocks</h3>
+
+                    {% if product.stocks is empty %}
+                        <p>No stocks available for this product.</p>
+                    {% else %}
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Warehouse</th>
+                                <th>Quantity</th>
+                            </tr>
+                            </thead>
+                            <tbody>
                             {% for stock in product.stocks %}
                                 <tr>
-                                    <td>{{ stock.location.name }}</td>
+                                    <td>{{ stock.warehouse.name }}</td>
                                     <td>{{ stock.quantity == 0 ? 'Out of stock' : stock.quantity }}</td>
                                 </tr>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                {% endif %}
-            </div>
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

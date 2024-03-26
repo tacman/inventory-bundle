@@ -11,8 +11,13 @@ class WarehouseService
         readonly private WarehouseRepository $repository
     ) {}
 
-    public function getWarehouseByLocation(string $location): ?Warehouse
+    public function getWarehouse(int $id): ?Warehouse
     {
-        return $this->repository->findOneBy(['code' => $location]);
+        return $this->repository->find($id);
+    }
+
+    public function getWarehouseByCode(string $warehouseCode): ?Warehouse
+    {
+        return $this->repository->findOneBy(['code' => $warehouseCode]);
     }
 }
