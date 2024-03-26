@@ -47,6 +47,7 @@ inventory:
 ## Usage
 
 Website: http://localhost:8080/
+
 Mail Catcher: http://localhost:1080/
 
 Note that you need to run the `messenger:consumer` command to consume events for Stock updates to receive the out-of-stock email.
@@ -63,4 +64,3 @@ $ php bin/phpunit vendor/plinio-cardoso/inventory-bundle
 **Unit/Application Tests:** In this module I created only unit tests for the most important classes (services) to show my knowledge of this, however, in a real-world scenario I would create all unit tests for all classes and application tests for all controllers/view to achieve 100% of coverage.
 
 **Docker:** The docker folder in this module has an example of the current docker setup that I used to run this module in a Symfony application to show my knowledge of docker.
-# inventory-bundle
