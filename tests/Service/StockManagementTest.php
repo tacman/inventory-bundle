@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\Service;
+namespace PlinioCardoso\InventoryBundle\Tests\Service;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
