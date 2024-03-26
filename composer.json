@@ -2,7 +2,7 @@
   "name": "plinio-cardoso/inventory-bundle",
   "description": "Tech Test | PHP Developer | SF9",
   "type": "symfony-bundle",
-  "version": "1.0",
+  "version": "2.0",
   "require": {
     "symfony/framework-bundle": "^7.0",
     "doctrine/orm": "^3.1",
