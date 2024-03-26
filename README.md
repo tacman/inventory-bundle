@@ -1,6 +1,9 @@
 
 # Inventory Bundle
 
+I recorded a video showing the application running, you can watch it [here](https://youtu.be/1Q6J9Q6Z9ZQ).
+I go through the application, run the inventory command, run the tests, update and create stocks, etc.
+
 ## Installation
 
 #### Optional
