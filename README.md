@@ -24,19 +24,19 @@ Packagist: https://packagist.org/packages/plinio-cardoso/inventory-bundle
 #### Step 1 - Download the Inventory Bundle using composer
 
 ```bash  
-$ composer require plinio-cardoso/inventory-bundle "2.0"
+composer require plinio-cardoso/inventory-bundle "2.0"
 ```
 
 #### Step 2 - Add the config files manually if you are not using Symfony Flex
 
 > config/routes/inventory.yaml
-```
+```yaml
 inventory:  
     resource: '@InventoryBundle/config/routing.yml'
 ```
 
 > config/packages/inventory.yaml
-```
+```yaml
 inventory:  
     out_of_stock_notification:  
         from: 'system@gmail.com'  
@@ -56,7 +56,7 @@ Note that you need to run the `messenger:consumer` command to consume events for
 
 #### Command to run only the inventory bundle tests
 ```
-$ php bin/phpunit vendor/plinio-cardoso/inventory-bundle
+php bin/phpunit vendor/plinio-cardoso/inventory-bundle
 ```
 
 ## Notes
